@@ -90,7 +90,7 @@ No external datasets, APIs or database servers are required. Every environment i
 Clone the repository and enter its directory:
 
 ```bash
-git clone https://github.com/Rodrisici/intelligent-agents-search-mdp.git
+git clone https://github.com/rodrigosicilia/intelligent-agents-search-mdp.git
 cd intelligent-agents-search-mdp
 ```
 
