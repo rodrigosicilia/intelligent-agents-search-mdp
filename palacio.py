@@ -3,6 +3,7 @@
 
 
 
+import math
 import random
 import sys
 
@@ -83,6 +84,85 @@ def ask_choice(prompt, choices, default=None):
         if txt in choices_lc:
             return txt
         print(f"Opción no válida. Opciones: {', '.join(choices_lc)}")
+
+
+def ask_int(prompt, default=None, min_value=None, max_value=None):
+    """Pide un entero por consola y vuelve a preguntar mientras no sea válido.
+
+        Args:
+            prompt (str): Texto que se muestra al pedir el número.
+            default (int | None): Valor que se devuelve si el usuario pulsa Enter.
+            min_value (int | None): Mínimo permitido (inclusive).
+            max_value (int | None): Máximo permitido (inclusive).
+
+        Returns:
+            int: Entero válido dentro del rango pedido.
+
+    """
+    while True:
+        txt = input(prompt).strip()
+
+        if txt == "":
+            if default is None:
+                print("Debes introducir un número entero.")
+                continue
+            val = int(default)
+        else:
+            try:
+                val = int(txt)
+            except ValueError:
+                print("Entrada no válida: escribe un número entero (o enter para el valor por defecto).")
+                continue
+
+        if min_value is not None and val < min_value:
+            print(f"Valor fuera de rango: debe ser >= {min_value}.")
+            continue
+        if max_value is not None and val > max_value:
+            print(f"Valor fuera de rango: debe ser <= {max_value}.")
+            continue
+
+        return val
+
+
+def ask_float(prompt, default=None, min_value=None, max_value=None):
+    """Pide un número decimal por consola y vuelve a preguntar mientras no sea válido.
+
+        Args:
+            prompt (str): Texto que se muestra al pedir el número.
+            default (float | None): Valor que se devuelve si el usuario pulsa Enter.
+            min_value (float | None): Mínimo permitido (inclusive).
+            max_value (float | None): Máximo permitido (inclusive).
+
+        Returns:
+            float: Número válido dentro del rango pedido.
+
+    """
+    while True:
+        txt = input(prompt).strip()
+
+        if txt == "":
+            if default is None:
+                print("Debes introducir un número.")
+                continue
+            val = float(default)
+        else:
+            try:
+                val = float(txt)
+            except ValueError:
+                print("Entrada no válida: escribe un número (ej: 0.25) o pulsa enter para el valor por defecto.")
+                continue
+            if not math.isfinite(val):
+                print("Entrada no válida: escribe un número finito.")
+                continue
+
+        if min_value is not None and val < min_value:
+            print(f"Valor fuera de rango: debe ser >= {min_value}.")
+            continue
+        if max_value is not None and val > max_value:
+            print(f"Valor fuera de rango: debe ser <= {max_value}.")
+            continue
+
+        return val
 
 
 def in_bounds(n, r, c):
@@ -2375,17 +2455,11 @@ def run():
 
     rng = random.Random(seed)
 
-    n_in = input(f"Tamaño n (enter={DEFAULT_N}): ").strip()
-    n = DEFAULT_N if n_in == "" else int(n_in)
-    if n < 3:
-        print("n debe ser >= 3 para que el mundo sea generable.")
-        return
+    #n >= 3 para que quepan las tres trampas, el soldado, la salida y Kurtz
+    n = ask_int(f"Tamaño n (enter={DEFAULT_N}): ", default=DEFAULT_N, min_value=3)
 
-    p_in = input(f"Umbral de riesgo p (enter={DEFAULT_RISK_CUTOFF}): ").strip()
-    risk_cutoff = DEFAULT_RISK_CUTOFF if p_in == "" else float(p_in)
-    if not (0.0 <= risk_cutoff <= 1.0):
-        print("p debe estar en [0, 1].")
-        return
+    risk_cutoff = ask_float(f"Umbral de riesgo p (enter={DEFAULT_RISK_CUTOFF}): ",
+                            default=DEFAULT_RISK_CUTOFF, min_value=0.0, max_value=1.0)
 
     start = (0, 0)
     world = make_world(n, rng, start)

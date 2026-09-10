@@ -10,13 +10,13 @@ permissions:
 
 jobs:
   validate:
-    name: Compile and import (Python ${{ matrix.python-version }})
+    name: Compile, import and run (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - name: Check out repository
@@ -40,6 +40,5 @@ jobs:
       - name: Verify imports
         run: python -c "import kurtz, kurtz_colors, palacio, river; print('All modules imported successfully.')"
 
-      - name: Solve the river MDP end to end
-        run: |
-          printf '42\n\n\n\n\nn\n5\nn\n' | python river.py
+      - name: Run the smoke tests
+        run: python tests/smoke_test.py

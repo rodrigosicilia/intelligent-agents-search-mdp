@@ -1,7 +1,7 @@
 # Intelligent Agents, Search and Markov Decision Processes
 
 [![Python checks](https://github.com/rodrigosicilia/intelligent-agents-search-mdp/actions/workflows/python-checks.yml/badge.svg)](https://github.com/rodrigosicilia/intelligent-agents-search-mdp/actions/workflows/python-checks.yml)
-[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://www.python.org/downloads/)
+[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Three interactive, terminal-based artificial intelligence environments implemented from
@@ -11,7 +11,7 @@ and Markov decision processes.
 
 Individual project by **Rodrigo Alejandro Sicilia Maroto**, written for the Fundamentals of
 Artificial Intelligence course in the second year of the Mathematical Engineering and
-Artificial Intelligence degree at ICAI – Universidad Pontificia Comillas (2025/2026).
+Artificial Intelligence degree at ICAI, Universidad Pontificia Comillas (2025/2026).
 
 > **Note on language.** This documentation is in English, but the source-code comments and
 > the interactive console interface are in **Spanish**, as originally submitted. The
@@ -103,6 +103,10 @@ tables.
 
 ## Sample output
 
+Both transcripts below are real program output, shortened: long stretches of repeated
+boards and per-step logs have been cut, and the ANSI colour codes stripped. Nothing has
+been reworded, so running the same seed reproduces these lines exactly.
+
 ### River Crossing MDP
 
 Generated world, converged value function and extracted policy (seed `42`, default 7×6 map,
@@ -132,7 +136,7 @@ Tabla de valores V(s):
  90.9  91.9  95.5  97.1  98.6   E
  90.7  91.7  95.1  96.5  97.8  99.0
 
-Politica optima:
+Política óptima:
 ||   Sv    >     >     v     >     v   ||
 ||   v     I     >     v     I     v   ||
 ||   >     >     >     >     >     v   ||
@@ -141,8 +145,16 @@ Politica optima:
 ||   >     >     >     >     >     E   ||
 ||   >     >     >     >     >     ^   ||
 
-Resumen final de simulacion:
-Exitos: 3/3
+Acciones en la politica (conteo en la rejilla):
+  up: 1
+  down: 9
+  left: 0
+  right: 29
+  stay: 0
+  none: 1
+
+Resumen final de simulación:
+Éxitos: 3/3
 Media de puntos: 90.000
 Pasos medios: 10.00
 ```
@@ -156,31 +168,38 @@ than `down` has a 70 % chance of being pushed downstream instead.
 Search trace and the internal map of the agent (A\*, seed `3`):
 
 ```text
-=== PLANIFICACION A KURTZ ===
+=== PLANIFICACIÓN A KURTZ ===
 [Plan] Step 0 | Frontier={(1, 1)(4)} | Removed=(1, 1)(4) | Explored={(1, 1)(4)}
 [Plan] Step 1 | Frontier={(1, 2)(4),(2, 1)(4)} | Removed=(1, 2)(4) | Explored={(1, 1)(4),(1, 2)(4)}
-[Plan] Step 2 | Frontier={(2, 1)(4),(1, 3)(6),(2, 2)(4)} | Removed=(2, 1)(4) | Explored={...}
+[Plan] Step 2 | Frontier={(2, 1)(4),(1, 3)(6),(2, 2)(4)} | Removed=(2, 1)(4) | Explored={(1, 1)(4),(1, 2)(4),(2, 1)(4)}
 
 [Auto] Plan 1 (posiciones): (1, 1) -> (1, 2) -> (2, 2) -> (3, 2) -> (4, 2)
 [Auto] Plan 1 (teclas):     d s s s
 
+[Auto] Plan 2 (posiciones): (4, 2) -> (4, 3) -> (4, 4)
+[Auto] Plan 2 (teclas):     d d
+
 === PALACIO (conocimiento del agente) ===
+Leyenda: v visitada(verde) | ✓ segura no explorada(azul) | . desconocida | P?/S? posible peligro(naranja) | P!/S! peligro seguro(rojo) | E?/E! salida(amarillo)
+CW=Capitán Willard (subíndices: B=brisa, R=ronquido, E=resplandor)
+
          1       2       3       4       5       6
       ------------------------------------------------
-  1 |    CW      v       .       .       .       .
-  2 |    v       .       .       .       .       .
+  1 |    CW      ✓       .       .       .       .
+  2 |    ✓       .       .       .       .       .
   3 |    .       .       .       .       .       .
   4 |    .       .       .       .       .       .
   5 |    .       .       .       .       .       .
   6 |    .       .       .       .       .       .
 
-Percepto:[Brisa=0, Ronquido=0, Resplandor=0, Pared_arriba=1, ...]
+Estado: pos=(1, 1) | vivo=True | Kurtz=False | granada=sí | soldado_vivo=True
+Percepto:[Brisa=0, Ronquido=0, Resplandor=0, Pared_arriba(^)=1, Pared_abajo(v)=0, Pared_izq(<)=1, Pared_dcha(>)=0, Grito=0]
 ```
 
 Each frontier entry is printed as `(row, col)(f-value)`, so the whole A\* expansion order
-can be checked by hand. In the board, `CW` is the agent, `v` a visited cell, `.` an unknown
-cell, `P?`/`S?` a possible hazard, `P!`/`S!` a certain hazard, and `E?`/`E!` a candidate or
-confirmed exit.
+can be checked by hand. In the board, `CW` is the agent, `v` a visited cell, `✓` a cell
+already proved safe but not yet visited, `.` an unknown cell, `P?`/`S?` a possible hazard,
+`P!`/`S!` a certain hazard, and `E?`/`E!` a candidate or confirmed exit.
 
 ## Repository structure
 
@@ -188,7 +207,9 @@ confirmed exit.
 .
 ├── .github/
 │   └── workflows/
-│       └── python-checks.yml   # CI: compilation, imports and an end-to-end MDP run
+│       └── python-checks.yml   # CI: compilation, imports and end-to-end runs
+├── tests/
+│   └── smoke_test.py           # Drives all three programs from start to finish
 ├── .gitattributes              # Deterministic line endings across platforms
 ├── .gitignore
 ├── LICENSE                     # MIT
@@ -210,11 +231,11 @@ confirmed exit.
 The project was developed and validated with:
 
 ```text
-Python 3.13.5
-NumPy 2.3.5
+Python 3.13.3
+NumPy 2.4.0
 ```
 
-Continuous integration additionally exercises Python 3.11, 3.12 and 3.13.
+Continuous integration additionally exercises Python 3.11, 3.12, 3.13 and 3.14.
 
 No external datasets, APIs or database servers are required: every environment is generated
 at runtime.
@@ -255,7 +276,7 @@ python -m pip install -r requirements.txt
 
 All commands must be executed from the repository root. Each program is fully interactive
 and prompts in Spanish; the tables below translate every question you will be asked.
-Pressing <kbd>Enter</kbd> always accepts the default shown in the prompt.
+Where a prompt shows a default, pressing <kbd>Enter</kbd> accepts it.
 
 ### 1. Searching for Colonel Kurtz
 
@@ -265,9 +286,9 @@ python kurtz.py
 
 | Prompt (Spanish) | Meaning | Accepted values |
 | --- | --- | --- |
-| `Elige modo [manual/auto]` | Manual or automatic mode | `manual`, `auto` |
-| `Elige búsqueda [bfs/dfs/gbfs/astar]` | Search algorithm (automatic mode only) | `bfs`, `dfs`, `gbfs`, `astar` |
-| `¿Modo silencioso?` | Suppress the detailed traces | `s` = yes, `n` = no |
+| `Elige modo [manual/auto]` | Manual or automatic mode | `manual`, `auto`, no default |
+| `Elige búsqueda [bfs/dfs/gbfs/astar]` | Search algorithm (automatic mode only) | `bfs`, `dfs`, `gbfs`, `astar`, no default |
+| `¿Modo silencioso?` | Suppress the detailed traces (automatic mode only) | `s` = yes, `n` = no |
 | `Semilla` | Random seed | any integer, or Enter for random |
 | `Tamaño del tablero n` | Grid size | integer ≥ 3, default 6 |
 
@@ -292,13 +313,16 @@ python palacio.py
 
 | Prompt (Spanish) | Meaning | Accepted values |
 | --- | --- | --- |
-| `Modo [manual/auto]` | Manual or automatic mode | `manual`, `auto` |
-| `Búsqueda [bfs/dfs/gbfs/astar]` | Search algorithm | `bfs`, `dfs`, `gbfs`, `astar` |
-| `¿Modo silencioso?` | Suppress the detailed traces | `s` = yes, `n` = no |
+| `Modo [manual/auto]` | Manual or automatic mode | `manual`, `auto`, default `manual` |
+| `Búsqueda [bfs/dfs/gbfs/astar]` | Search algorithm (automatic mode only) | `bfs`, `dfs`, `gbfs`, `astar`, default `astar` |
+| `¿Modo silencioso?` | Suppress the detailed traces (automatic mode only) | `s` = yes, `n` = no |
 | `Semilla` | Random seed | any integer, or Enter for random |
 | `Tamaño n` | Grid size | integer ≥ 3, default 6 |
 | `Umbral de riesgo p` | Maximum accepted probability of death per cell | float in `[0, 1]`, default `0.20` |
-| `¿Imprimir TODOS los mapas numéricos?` | Print every belief and risk matrix | `s`, `n` |
+| `¿Imprimir TODOS los mapas numéricos?` | Print every belief and risk matrix (automatic mode only) | `s`, `n` |
+
+Anything that is not a valid answer is rejected and asked again, so a typo never ends the
+run.
 
 Manual controls:
 
@@ -347,17 +371,30 @@ simulations unless the same random state is reproduced.
 
 ## Validation
 
-A GitHub Actions workflow runs on every push and pull request. Across Python 3.11, 3.12 and
-3.13 it:
+The repository ships a smoke-test script that runs the three programs from start to finish.
+It needs nothing beyond the project dependency:
+
+```bash
+python tests/smoke_test.py
+```
+
+Each of its eleven cases launches a program as a separate process with a fixed seed and a
+prepared sequence of answers on standard input, then checks the exit code, the absence of a
+traceback, and the presence of the expected headings and final summary. The cases cover all
+three programs, both manual and automatic modes, several search algorithms, the deadly-island
+MDP variant, and rejection of malformed input. Numeric values are deliberately not asserted,
+so the tests do not break over a decimal.
+
+A GitHub Actions workflow runs on every push and pull request. Across Python 3.11, 3.12,
+3.13 and 3.14 it:
 
 1. Installs the declared dependency.
 2. Byte-compiles all four modules.
 3. Imports every module, verifying that the dependency graph is valid.
-4. Solves a seeded river MDP end to end, covering world generation, Value Iteration and
-   episode simulation, and fails the build on any non-zero exit code.
+4. Runs the smoke tests, and fails the build on any non-zero exit code.
 
-Beyond CI, the search and inference components were exercised interactively across multiple
-seeds and all four search algorithms, in both manual and automatic modes.
+Beyond that, the search and inference components were exercised interactively across
+multiple seeds and all four search algorithms, in both manual and automatic modes.
 
 ## Design notes
 
@@ -379,8 +416,9 @@ seeds and all four search algorithms, in both manual and automatic modes.
 - The interfaces are terminal-based and the prompts are in Spanish.
 - Automatically generated worlds can require a user-authorised risk decision when the
   available evidence is insufficient to prove any route safe.
-- There is no formal unit-test suite. Automated validation covers compilation, imports and
-  an end-to-end MDP run; the interactive components were validated manually.
+- There is no unit-test suite. Automated validation is end-to-end: it drives the programs
+  through their console interface and checks that a full run completes and produces the
+  expected structure, not that each individual function is correct.
 
 ## Documentation
 
@@ -399,4 +437,4 @@ the same course, please use it as a reference rather than as a submission.
 
 **Rodrigo Alejandro Sicilia Maroto**  
 Mathematical Engineering and Artificial Intelligence  
-ICAI – Universidad Pontificia Comillas
+ICAI, Universidad Pontificia Comillas
