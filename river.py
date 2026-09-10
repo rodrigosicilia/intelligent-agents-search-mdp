@@ -16,9 +16,11 @@ Extra:
 """
 
 import math
-import numpy as np
 import random
+import sys
 from collections import deque
+
+import numpy as np
 
 
 ANSI = {
@@ -1256,6 +1258,24 @@ def _print_config_explanation() -> None:
     print("  Islas peligrosas (extra): si lo activas, entrar en una isla termina la partida con penalización.")
 
 
+def enable_utf8_output():
+    """Fuerza la salida estandar a UTF-8 para que no fallen los simbolos del tablero.
+
+    Por que hace falta:
+    -El tablero usa caracteres que no existen en las codificaciones antiguas de Windows
+     (por ejemplo el visto bueno y las flechas).
+    -En una consola normal Python ya los imprime bien, pero al redirigir la salida a un
+     fichero o a otro programa usa la codificacion local (cp1252) y salta UnicodeEncodeError.
+    -Con errors="replace" el programa nunca se cae: como mucho se ve un simbolo sustituto.
+
+    Returns:
+        None
+    """
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
+
 def main() -> None:
     """Ejecuta el flujo completo: crear mundo, resolver, imprimir y simular."""
     print(color("MDP del río", "bold"))
@@ -1341,4 +1361,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    enable_utf8_output()
     main()

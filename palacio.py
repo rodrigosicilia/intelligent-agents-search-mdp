@@ -4,7 +4,10 @@
 
 
 import random
+import sys
+
 import numpy as np
+
 import kurtz_colors as kc
 
 kc.USE_COLOR = True
@@ -2134,7 +2137,7 @@ def run_auto(world, risk_cutoff, search_method="astar", steps_max=500, verbose=T
         #Si llegamos a salida con Kurtz, pedimos 'x' (estilo parte 1)
         if can_exit(pos, kurtz_found, world):
             actions_exec.append("x")
-            print(paint("\n[AUTO] Estás en la salida con Kurtz: salgo automáticamente (x). ✅", kc.YELLOW_DARK))
+            print(paint("\n[AUTO] Estás en la salida con Kurtz: salgo automáticamente (x).", kc.YELLOW_DARK))
             print(paint("\n[AUTO] ÉXITO: has salido con Kurtz.", kc.GREEN))
             return {
                 "result": "SUCCESS",
@@ -2146,7 +2149,7 @@ def run_auto(world, risk_cutoff, search_method="astar", steps_max=500, verbose=T
     #Si termina el plan sin haber salido, devolvemos estado
     if can_exit(pos, kurtz_found, world):
         actions_exec.append("x")
-        print(paint("\n[AUTO] Estás en la salida con Kurtz al finalizar el plan: salgo automáticamente (x). ✅", kc.YELLOW_DARK))
+        print(paint("\n[AUTO] Estás en la salida con Kurtz al finalizar el plan: salgo automáticamente (x).", kc.YELLOW_DARK))
         print(paint("\n[AUTO] ÉXITO: has salido con Kurtz.", kc.GREEN))
         return {
             "result": "SUCCESS",
@@ -2318,6 +2321,24 @@ def run_manual(world, risk_cutoff):
 #Main
 
 
+def enable_utf8_output():
+    """Fuerza la salida estandar a UTF-8 para que no fallen los simbolos del tablero.
+
+    Por que hace falta:
+    -El tablero usa caracteres que no existen en las codificaciones antiguas de Windows
+     (por ejemplo el visto bueno y las flechas).
+    -En una consola normal Python ya los imprime bien, pero al redirigir la salida a un
+     fichero o a otro programa usa la codificacion local (cp1252) y salta UnicodeEncodeError.
+    -Con errors="replace" el programa nunca se cae: como mucho se ve un simbolo sustituto.
+
+    Returns:
+        None
+    """
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
+
 def run():
     """Punto de entrada del programa: configura parámetros, genera el mundo y lanza modo manual o automático.
     
@@ -2384,5 +2405,5 @@ def run():
 
 
 if __name__ == "__main__":
-
+    enable_utf8_output()
     run()

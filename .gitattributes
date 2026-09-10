@@ -1,0 +1,19 @@
+# Normalise line endings so the repository is identical on Windows, macOS and Linux.
+* text=auto eol=lf
+
+# Source and configuration files are always stored and checked out with LF.
+*.py     text eol=lf
+*.md     text eol=lf
+*.txt    text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+.gitignore     text eol=lf
+.gitattributes text eol=lf
+
+# Binary files must never be converted.
+*.pdf binary
+*.png binary
+*.jpg binary
+
+# Keep the report out of textual diffs and language statistics.
+FIA_Project_Report.pdf -diff linguist-documentation

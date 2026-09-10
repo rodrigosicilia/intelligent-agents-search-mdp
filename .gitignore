@@ -2,18 +2,27 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+
+# Distribution and packaging artefacts
+build/
+dist/
+*.egg-info/
+.eggs/
 
 # Virtual environments
 .venv/
 venv/
 env/
 ENV/
+.python-version
 
 # Test, type-checking and linting caches
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 .coverage
+.coverage.*
 htmlcov/
 
 # IDE and editor settings
@@ -25,8 +34,10 @@ htmlcov/
 # Operating-system files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Logs and temporary files
+# Logs, local environment and temporary files
 *.log
 *.tmp
+.env
 ~$*

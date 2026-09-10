@@ -1,4 +1,6 @@
 import random
+import sys
+
 import kurtz_colors as kc
 #Buscando al Coronel Kurtz (Parte 1) - FIA
 
@@ -2798,6 +2800,25 @@ def ask_yes_no(prompt: str, default=None) -> bool:
             return False
         print("Respuesta inválida. Escribe 's' o 'n'.")
 
+
+def enable_utf8_output():
+    """Fuerza la salida estandar a UTF-8 para que no fallen los simbolos del tablero.
+
+    Por que hace falta:
+    -El tablero usa caracteres que no existen en las codificaciones antiguas de Windows
+     (por ejemplo el visto bueno y las flechas).
+    -En una consola normal Python ya los imprime bien, pero al redirigir la salida a un
+     fichero o a otro programa usa la codificacion local (cp1252) y salta UnicodeEncodeError.
+    -Con errors="replace" el programa nunca se cae: como mucho se ve un simbolo sustituto.
+
+    Returns:
+        None
+    """
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
+
 def main():
     """Punto de entrada.
 
@@ -2860,4 +2881,5 @@ def main():
 
 
 if __name__ == "__main__":
+    enable_utf8_output()
     main()
